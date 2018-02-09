@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ohana</title>
+    <link rel="stylesheet" href="/home.css">
+    <link href="https://fonts.googleapis.com/css?family=PT+Serif:700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Architects+Daughter|Gloria+Hallelujah" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+    $(window).load(function() {
+
+
+            fetch('https://api.mlab.com/api/1/databases/ohanayelp/collections/results?&l=41994&apiKey=T_4ma8aw6AyAhVzAcfzCpxEKDJqxffrn').then(function(response) {
+              if (response.status != 200) {
+                window.alert("Sorry, nothing matches those search terms.  Try another search, or use the panel on the left.");
+                return;
+              }
+
+              response.json().then(function(data) {
+                let api = data;
+                
+                let arr = [];
+                for (var i = 0; i < api.length; i++) {
+                  arr.push(api[i].id);
+                }
+                
+                
+                let array = [].concat.apply([], arr);
+                
+                
+                
+                let cityState = [];
+                let category = [];
+                for (var i = 0; i < array.length; i++) {
+                  if(cityState.includes(array[i].location.city)==false){
+                    cityState.push(array[i].location.city);
+                  }
+                    category.push(array[i].categories);
+                }
+              
+              
+              let categories = [].concat.apply([], category);
+                
+              
+              
+      let displayCategories = [];      
+    for (var i = 0; i < categories.length; i++) {
+      if(displayCategories.includes(categories[i].title)==false){
+        displayCategories.push(categories[i].title);
+      }
+      
+    }
+    let categBtn = document.getElementById('catBtn');
+    categBtn.onclick = displayCat;
+    
+    function displayCat(){
+    
+    displayCategories.sort();
+    for (var i = 0; i < displayCategories.length; i++) {
+       displayCategories[i] = `
+        <button id="id_${displayCategories[i]}" class="btn2">${displayCategories[i]}</button>
+      `;
+      
+      document.getElementById('categories').innerHTML += displayCategories[i];
+    }
+    
+    
+  };
+  
+  let locBtn = document.getElementById('locBtn');
+  locBtn.onclick = displayLoc;
+  
+  function displayLoc(){
+    cityState.sort();
+    for (var i = 0; i < cityState.length; i++) {
+       cityState[i] = `
+        <button id="id_${cityState[i]}" class="btn3">${cityState[i]}</button>
+      `;
+      
+      document.getElementById('locations').innerHTML += cityState[i];
+    }
+  };
+
+  $(document).on('click', '.btn2', function () {
+    let id = this.id;
+    let splitID = id.split("_");
+    let matchID = splitID[1];
+    let catContent = [];
+    for (var i = 0; i < array.length; i++) {
+      let catg = array[i].categories;
+      for (var k = 0; k < catg.length; k++) {
+        if(catg[k].title == matchID){
+          catContent.push(array[i]);
+        }
+      }
+    }
+    
+    for (var i = 0; i < catContent.length; i++) {
+      catContent[i] = `
+      <div class="item">
+      <p><label>Name:</label> ${catContent[i].name}</p>
+      <p><label>Is business closed:</label> ${catContent[i].is_closed}</p>
+      <p><label>website:</label> <a href="${catContent[i].url}">click here</a></p>
+      <p><label>City:</label> ${catContent[i].location.city}</p>
+      <p><label>Zip Code:</label> ${catContent[i].location.zip_code}</p>
+      <p><label>City:</label> ${catContent[i].location.city}</p>
+      <p><label>Phone:</label> ${catContent[i].location.phone}</p>
+      <p><label>Rating:</label> ${catContent[i].location.rating}</p>
+      <p><label>Reviews:</label> ${catContent[i].location.review_count}</p>
+      </div>
+      `
+      document.getElementById('content').innerHTML += catContent[i];
+    }
+  
+    
+    
+  });
+  $(document).on('click', '.btn3', function () {
+    let id = this.id;
+    let splitID = id.split("_");
+    let matchID = splitID[1];
+    
+    let locContent = [];
+    for (var i = 0; i < array.length; i++) {
+      
+        if(array[i].location.city == matchID){
+      
+          locContent.push(array[i]);
+        }
+      
+    }
+    
+    for (var i = 0; i < locContent.length; i++) {
+      locContent[i] = `
+      <div class="item">
+      <p><label>Name:</label> ${locContent[i].name}</p>
+      <p><label>Is business closed:</label> ${locContent[i].is_closed}</p>
+      <p><label>website:</label> <a href="${locContent[i].url}">click here</a></p>
+      <p><label>City:</label> ${locContent[i].location.city}</p>
+      <p><label>Zip Code:</label> ${locContent[i].location.zip_code}</p>
+      <p><label>City:</label> ${locContent[i].location.city}</p>
+      <p><label>Phone:</label> ${locContent[i].location.phone}</p>
+      <p><label>Rating:</label> ${locContent[i].location.rating}</p>
+      <p><label>Reviews:</label> ${locContent[i].location.review_count}</p>
+      </div>
+      `
+      document.getElementById('content').innerHTML += locContent[i];
+    }
+  
+    
+    
+  });
+  
+              })
+            })
+        })
+        </script>
+  </head>
+  <body>
+    <div id="sidepanel" class="sidepanel">
+    <button id="catBtn" type="button" class="btn btn-info" data-toggle="collapse" data-target="#categories">Categories</button>
+
+      <div class="contentButtons" id="categories"></div>
+      
+      <button id="locBtn" type="button" class="btn btn-info" data-toggle="collapse" data-target="#locations">Locations</button>
+
+        <div class="contentButtons" id="locations"></div>
+    </div>
+    <div id="content" class="content"></div>
+  </body>
+</html>

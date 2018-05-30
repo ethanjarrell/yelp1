@@ -7,8 +7,7 @@ const expressValidator = require('express-validator');
 const mongoose = require('mongoose');
 const mustacheExpress = require('mustache-express');
 const session = require('express-session');
-const app = express();
-const url = 'mongodb://EthanJarrell:EJ3102nl1@ds243085.mlab.com:43085/ohanayelp';
+
 //=========================//
 
 //====SET APP ENGINE===//
